@@ -19,17 +19,30 @@ var getUserRepos = function (user) {
   var apiUrl = 'https://api.github.com/users/' + user + '/repos';
 
   // Make a request to the url
-  fetch(apiUrl).then(function (response) {
-    response.json().then(function (data) {
-      displayRepos(data, user);
+  fetch(apiUrl)
+    .then(function (response) {
+      if (response.ok) {
+        response.json().then(function (data) {
+          displayRepos(data, user);
+        });
+      } else {
+        alert('Error: Github user not found');
+      }
+    })
+    .catch(function (error) {
+      alert('Unable to connect to Github.');
     });
-  });
 };
 
 var displayRepos = function (repos, searchTerm) {
   // Clear old content
   repoContainerEl.textContent = '';
   repoSearchTerm.textContent = searchTerm;
+
+  if (repos.length === 0) {
+    repoContainerEl.textContent = 'No repositories found.';
+    return;
+  }
 
   // Loop over repos
   for (var i = 0; i < repos.length; i++) {
